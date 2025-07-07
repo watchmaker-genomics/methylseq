@@ -56,6 +56,7 @@ workflow NFCORE_METHYLSEQ {
     ch_or_val_fasta_index   = params.fasta_index   ? Channel.fromPath(params.fasta_index).map{ it -> [ [id:it.baseName], it ] } : []
     ch_or_val_bismark_index = params.bismark_index ? Channel.fromPath(params.bismark_index).map{ it -> [ [id:it.baseName], it ] } : []
     ch_or_val_bwameth_index = params.bwameth_index ? Channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] } : []
+    ch_or_val_bwamem_index  = params.bwamem_index  ? Channel.fromPath(params.bwamem_index).map{ it -> [ [id:it.baseName], it ] } : []
 
     //
     // SUBWORKFLOW: Prepare any required reference genome indices

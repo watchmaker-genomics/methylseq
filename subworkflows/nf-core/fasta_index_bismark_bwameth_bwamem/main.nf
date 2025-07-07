@@ -12,13 +12,11 @@ workflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM {
     fasta_index      // channel: [ val(meta), [ fasta index ] ]
     bismark_index    // channel: [ val(meta), [ bismark index ] ]
     bwameth_index    // channel: [ val(meta), [ bwameth index ] ]
+    bwamem_index  // channel: [ val(meta), [ bwamem index ] ]
     aligner          // string: bismark, bismark_hisat or bwameth
     collecthsmetrics // boolean: whether to run picard collecthsmetrics
     fasta         // channel: [ val(meta), [ fasta ] ]
     fasta_index   // channel: [ val(meta), [ fasta index ] ]
-    bismark_index // channel: [ val(meta), [ bismark index ] ]
-    bwameth_index // channel: [ val(meta), [ bwameth index ] ]
-    bwamem_index  // channel: [ val(meta), [ bwamem index ] ]
 
     main:
 
@@ -45,7 +43,7 @@ workflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM {
     ch_versions = ch_versions.mix(GUNZIP.out.versions)
 
     // Aligner: bismark or bismark_hisat
-    if( aligner =~ /bismark/ ){
+    if ( aligner =~ /bismark/ ){
         /*
          * Generate bismark index if not supplied
          */
@@ -102,24 +100,6 @@ workflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM {
         }
     }
 
-    /*
-    * Generate fasta index if not supplied for bwameth workflow or picard collecthsmetrics tool
-    */
-    if (aligner == 'bwameth' || collecthsmetrics) {
-        // already exising fasta index
-        if (fasta_index) {
-            ch_fasta_index = fasta_index
-        } else {
-            SAMTOOLS_FAIDX(
-                ch_fasta,
-                [[:], []],
-                false
-            )
-            ch_fasta_index = SAMTOOLS_FAIDX.out.fai
-            ch_versions    = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
-        }
-    }
-
     // Aligner: bwa
     else if ( params.aligner == 'bwamem' ){
         /*
@@ -142,11 +122,12 @@ workflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM {
             ch_bwamem_index = BWA_INDEX.out.index
             ch_versions     = ch_versions.mix(BWA_INDEX.out.versions)
         }
+    }
 
     /*
     * Generate fasta index if not supplied for bwameth workflow or picard collecthsmetrics tool
     */
-    if (aligner == 'bwameth' || collecthsmetrics) {
+    if ( aligner == 'bwameth' || aligner == 'bwamem' || collecthsmetrics) {
         // already exising fasta index
         if (fasta_index) {
             ch_fasta_index = fasta_index
@@ -160,44 +141,7 @@ workflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM {
             ch_versions    = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
         }
     }
-
-    // Aligner: bwa
-    else if ( params.aligner == 'bwamem' ){
-        /*
-         * Generate bwamem index if not supplied
-         */
-        if (bwamem_index) {
-            if (bwamem_index.toString().endsWith('.gz')) {
-                UNTAR (
-                    [ [:], file(bwamem_index, checkIfExists: true) ]
-                )
-                ch_bwamem_index = UNTAR.out.untar
-                ch_versions     = ch_versions.mix(UNTAR.out.versions)
-            } else {
-                ch_bwamem_index = Channel.value([[:], file(bwamem_index, checkIfExists: true)])
-            }
-        } else {
-            BWA_INDEX (
-                ch_fasta
-            )
-            ch_bwamem_index = BWA_INDEX.out.index
-            ch_versions     = ch_versions.mix(BWA_INDEX.out.versions)
-        }
-
-        /*
-         * Generate fasta index if not supplied
-         */
-        if (fasta_index) {
-            ch_fasta_index = Channel.value(file(fasta_index, checkIfExists: true))
-        } else {
-            SAMTOOLS_FAIDX(
-                ch_fasta,
-                [[:], []]
-            )
-            ch_fasta_index = SAMTOOLS_FAIDX.out.fai
-            ch_versions    = ch_versions.mix(SAMTOOLS_FAIDX.out.versions)
-        }
-    }
+    
 
     emit:
     fasta         = ch_fasta         // channel: [ val(meta), [ fasta ] ]
