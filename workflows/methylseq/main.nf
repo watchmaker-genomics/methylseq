@@ -11,8 +11,11 @@ include { QUALIMAP_BAMQC            } from '../../modules/nf-core/qualimap/bamqc
 include { PRESEQ_LCEXTRAP           } from '../../modules/nf-core/preseq/lcextrap/main'
 include { MULTIQC                   } from '../../modules/nf-core/multiqc/main'
 include { CAT_FASTQ                 } from '../../modules/nf-core/cat/fastq/main'
+include { RASTAIR_CALL              } from '../../modules/nf-core/rastair/call/main'
+include { RASTAIR_MBIAS             } from '../../modules/nf-core/rastair/mbias/main'
 include { FASTQ_ALIGN_DEDUP_BISMARK } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
 include { FASTQ_ALIGN_DEDUP_BWAMETH } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
+include { FASTQ_ALIGN_DEDUP_BWAMEM  } from '../../subworkflows/nf-core/fastq_align_dedup_bwamem/main'
 include { paramsSummaryMultiqc      } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML    } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText    } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
@@ -33,6 +36,7 @@ workflow METHYLSEQ {
     ch_fasta_index     // channel: [ path(fasta index)     ]
     ch_bismark_index   // channel: [ path(bismark index)   ]
     ch_bwameth_index   // channel: [ path(bwameth index)   ]
+    ch_bwamem_index    // channel: [ path(bwamem_index)    ]
 
     main:
 
@@ -42,8 +46,11 @@ workflow METHYLSEQ {
     ch_reads         = Channel.empty()
     ch_bam           = Channel.empty()
     ch_bai           = Channel.empty()
+    ch_rastair_mbias = Channel.empty()
+    ch_rastair_call  = Channel.empty()
     ch_qualimap      = Channel.empty()
     ch_preseq        = Channel.empty()
+    ch_aligner_mqc   = Channel.empty()
     ch_multiqc_files = Channel.empty()
 
     //
@@ -94,6 +101,11 @@ workflow METHYLSEQ {
     // SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
     //
 
+    if ( params.taps == true & params.aligner != 'bwameth') {
+        log.info "TAPS protocol detected and aligner is not 'bwameth'. Setting aligner to 'bwamem'."
+        params.aligner = 'bwamem'
+    } 
+
     // Aligner: bismark or bismark_hisat
     if ( params.aligner =~ /bismark/ ) {
         //
@@ -125,6 +137,49 @@ workflow METHYLSEQ {
         ch_bai         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions.unique{ it.baseName })
+    }
+
+    // Aligner: bwa mem
+    else if ( params.aligner == 'bwamem' ){
+
+        FASTQ_ALIGN_DEDUP_BWAMEM (
+            ch_reads,
+            ch_fasta,
+            // ch_fasta_index.map{ index -> [ [:], index ]},
+            ch_bwamem_index,
+            params.skip_deduplication,
+        )
+        ch_bam         = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
+        ch_bai         = FASTQ_ALIGN_DEDUP_BWAMEM.out.bai
+        ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM.out.multiqc
+        ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMEM.out.versions.unique{ it.baseName })
+    }   
+
+    //
+    // MODULE: Count C->T conversion rates as a readout for DNA methylation
+    //
+
+    if ( params.taps ) {
+        //
+        // Run Rastair Call: EDU: We may want a subworkflow here to run Rastair 3x for call, mbias and per-read
+        //
+        RASTAIR_MBIAS (
+            ch_bam,
+            ch_bai,
+            ch_fasta,
+            ch_fasta_index.map{ index -> [ [:], index ]},
+        )
+        ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), [ txt ] ]
+        ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
+
+        RASTAIR_CALL (
+            ch_bam,
+            ch_bai,
+            ch_fasta,
+            ch_fasta_index.map{ index -> [ [:], index ]},
+        )
+        ch_rastair_call = RASTAIR_CALL.out.txt // channel: [ val(meta), [ txt ] ]
+        ch_versions     = ch_versions.mix(RASTAIR_CALL.out.versions.first())
     }
 
     //

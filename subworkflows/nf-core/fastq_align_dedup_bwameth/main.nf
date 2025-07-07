@@ -122,24 +122,25 @@ workflow FASTQ_ALIGN_DEDUP_BWAMETH {
     /*
      * Extract per-base methylation and plot methylation bias
      */
+    if ( !params.taps ) {
 
-    METHYLDACKEL_EXTRACT (
-        ch_alignment.join(ch_alignment_index),
-        ch_fasta.map{ meta, fasta_file -> fasta_file },
-        ch_fasta_index.map{ meta, fasta_index -> fasta_index }
-    )
-    ch_methydackel_extract_bedgraph  = METHYLDACKEL_EXTRACT.out.bedgraph
-    ch_methydackel_extract_methylkit = METHYLDACKEL_EXTRACT.out.methylkit
-    ch_versions                      = ch_versions.mix(METHYLDACKEL_EXTRACT.out.versions)
+        METHYLDACKEL_EXTRACT (
+            ch_alignment.join(ch_alignment_index),
+            ch_fasta.map{ meta, fasta_file -> fasta_file },
+            ch_fasta_index.map{ meta, fasta_index -> fasta_index }
+        )
+        ch_methydackel_extract_bedgraph  = METHYLDACKEL_EXTRACT.out.bedgraph
+        ch_methydackel_extract_methylkit = METHYLDACKEL_EXTRACT.out.methylkit
+        ch_versions                      = ch_versions.mix(METHYLDACKEL_EXTRACT.out.versions)
 
-    METHYLDACKEL_MBIAS (
-        ch_alignment.join(ch_alignment_index),
-        ch_fasta.map{ meta, fasta_file -> fasta_file },
-        ch_fasta_index.map{ meta, fasta_index -> fasta_index }
-    )
-    ch_methydackel_mbias = METHYLDACKEL_MBIAS.out.txt
-    ch_versions          = ch_versions.mix(METHYLDACKEL_MBIAS.out.versions)
-
+        METHYLDACKEL_MBIAS (
+            ch_alignment.join(ch_alignment_index),
+            ch_fasta.map{ meta, fasta_file -> fasta_file },
+            ch_fasta_index.map{ meta, fasta_index -> fasta_index }
+        )
+        ch_methydackel_mbias = METHYLDACKEL_MBIAS.out.txt
+        ch_versions          = ch_versions.mix(METHYLDACKEL_MBIAS.out.versions)
+    }
     /*
      * Collect MultiQC inputs
      */

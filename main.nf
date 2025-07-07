@@ -15,11 +15,11 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTA_INDEX_BISMARK_BWAMETH } from './subworkflows/nf-core/fasta_index_bismark_bwameth/main'
-include { PIPELINE_INITIALISATION     } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { PIPELINE_COMPLETION         } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { getGenomeAttribute          } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { METHYLSEQ                   } from './workflows/methylseq/'
+include { FASTA_INDEX_BISMARK_BWAMETH_BWAMEM    } from './subworkflows/nf-core/fasta_index_bismark_bwameth_bwamem/main'
+include { PIPELINE_INITIALISATION               } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { PIPELINE_COMPLETION                   } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { getGenomeAttribute                    } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { METHYLSEQ                             } from './workflows/methylseq/'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,6 +29,7 @@ include { METHYLSEQ                   } from './workflows/methylseq/'
 params.fasta         = getGenomeAttribute('fasta')
 params.fasta_index   = getGenomeAttribute('fasta_index')
 params.bwameth_index = getGenomeAttribute('bwameth')
+params.bwamem_index  = getGenomeAttribute('bwa')
 params.bismark_index = params.aligner == 'bismark_hisat' ? getGenomeAttribute('bismark_hisat2') : getGenomeAttribute('bismark')
 
 /*
@@ -52,13 +53,14 @@ workflow NFCORE_METHYLSEQ {
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
     //
-    FASTA_INDEX_BISMARK_BWAMETH(
+    FASTA_INDEX_BISMARK_BWAMETH_BWAMEM(
         params.fasta,
         params.fasta_index,
         params.bismark_index,
         params.bwameth_index,
+        params.bwamem_index
     )
-    ch_versions = ch_versions.mix(FASTA_INDEX_BISMARK_BWAMETH.out.versions)
+    ch_versions = ch_versions.mix(FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.versions)
 
     //
     // WORKFLOW: Run pipeline
@@ -67,10 +69,11 @@ workflow NFCORE_METHYLSEQ {
     METHYLSEQ (
         samplesheet,
         ch_versions,
-        FASTA_INDEX_BISMARK_BWAMETH.out.fasta,
-        FASTA_INDEX_BISMARK_BWAMETH.out.fasta_index,
-        FASTA_INDEX_BISMARK_BWAMETH.out.bismark_index,
-        FASTA_INDEX_BISMARK_BWAMETH.out.bwameth_index,
+        FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.fasta,
+        FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.fasta_index,
+        FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.bismark_index,
+        FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.bwameth_index,
+        FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.bwamem_index,
     )
     ch_versions = ch_versions.mix(METHYLSEQ.out.versions)
 

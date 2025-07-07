@@ -83,6 +83,34 @@ bwameth/
     └── logs
 ```
 
+#### bwa-mem
+
+```
+bwamem/
+├── bwamem
+│   ├── alignments
+│   └── deduplicated
+├── fastqc
+│   ├── Ecoli_10K_methylated_1_fastqc.html
+│   ├── Ecoli_10K_methylated_2_fastqc.html
+│   └── zips
+├── Rastair
+│   ├── Ecoli_10K_methylated.markdup.sorted_CpG.rastair_call.tsv
+│   └── mbias
+├── multiqc
+│   └── bwamem
+├── pipeline_info
+│   ├── execution_report_2024-12-13_05-36-34.html
+│   ├── execution_timeline_2024-12-13_05-36-34.html
+│   ├── execution_trace_2024-12-13_05-36-34.txt
+│   ├── nf_core_methylseq_software_mqc_versions.yml
+│   ├── params_2024-12-13_05-36-43.json
+│   └── pipeline_dag_2024-12-13_05-36-34.html
+└── trimgalore
+    ├── fastqc
+    └── logs
+```
+
 ### Detailed Output Descriptions
 
 ### FastQC
@@ -216,6 +244,10 @@ Filename abbreviations stand for the following reference alignment strands:
 
 - `sample.bedGraph`
   - Methylation statuses in [bedGraph](http://genome.ucsc.edu/goldenPath/help/bedgraph.html) format.
+
+
+### Rastair
+# TODO
 
 ### Bismark Reports
 
