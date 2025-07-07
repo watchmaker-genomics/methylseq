@@ -15,8 +15,6 @@ workflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM {
     bwamem_index  // channel: [ val(meta), [ bwamem index ] ]
     aligner          // string: bismark, bismark_hisat or bwameth
     collecthsmetrics // boolean: whether to run picard collecthsmetrics
-    fasta         // channel: [ val(meta), [ fasta ] ]
-    fasta_index   // channel: [ val(meta), [ fasta index ] ]
 
     main:
 
