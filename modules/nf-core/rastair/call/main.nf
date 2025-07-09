@@ -12,8 +12,8 @@ process RASTAIR_CALL {
     input:
     tuple val(meta), path(bam)
     tuple val(meta2), path(bai)
-    tuple val(meta3), path(fasta)
-    tuple val(meta4), path(fai)
+    path(fasta)
+    path(fai)
 
     output:
     tuple val(meta), path("*.rastair_call.txt"),    emit: txt

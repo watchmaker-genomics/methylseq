@@ -26,10 +26,6 @@ workflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM {
     ch_versions      = Channel.empty()
 
     // Check if fasta file is gzipped and decompress if needed
-
-    // VIEW FASTA CHANNEL
-    fasta.view{ it -> "fasta channel: ${it}" }
-
     fasta
         .branch {
             gzipped: it[1].toString().endsWith('.gz')
