@@ -175,7 +175,6 @@ workflow METHYLSEQ {
         FASTQ_ALIGN_DEDUP_BWAMEM (
             ch_reads,
             ch_fasta,
-            // ch_fasta_index.map{ index -> [ [:], index ]},
             ch_bwamem_index,
             params.skip_deduplication,
         )
@@ -196,6 +195,11 @@ workflow METHYLSEQ {
         //
         // Run Rastair Call: EDU: We may want a subworkflow here to run Rastair 3x for call, mbias and per-read
         //
+        ch_fasta.view { it -> "fasta channel: ${it}" }
+        ch_fasta_index.view { it -> "fasta index channel: ${it}" }
+        ch_bam.view { it -> "bam channel: ${it}" }
+        ch_bai.view { it -> "bai channel: ${it}" }
+
         RASTAIR_MBIAS (
             ch_bam,
             ch_bai,
@@ -204,6 +208,7 @@ workflow METHYLSEQ {
         )
         ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), [ txt ] ]
         ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
+
 
         RASTAIR_CALL (
             ch_bam,
