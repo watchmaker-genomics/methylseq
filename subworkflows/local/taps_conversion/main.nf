@@ -10,10 +10,11 @@ include { RASTAIR_MBIAS             } from '../../../modules/nf-core/rastair/mbi
 workflow TAPS_CONVERSION {
 
     take:
-    ch_fasta               // channel: [ [:], /path/to/genome.fa]
-    ch_fasta_index         // channel: [ val(meta), /path/to/genome.fa.fai]
     ch_bam                 // channel: [ val(meta), [ bam ] ] ## BAM from alignment
     ch_bai                 // channel: [ val(meta), [ bai ] ] ## BAI from alignment
+    ch_fasta               // channel: [ [:], /path/to/genome.fa]
+    ch_fasta_index         // channel: [ val(meta), /path/to/genome.fa.fai]
+
 
     main:
 
@@ -30,7 +31,7 @@ workflow TAPS_CONVERSION {
     ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), [ txt ] ]
     ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
 
-    
+
 
     RASTAIR_CALL (
         ch_bam,
