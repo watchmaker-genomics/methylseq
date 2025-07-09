@@ -11,8 +11,6 @@ include { QUALIMAP_BAMQC            } from '../../modules/nf-core/qualimap/bamqc
 include { PRESEQ_LCEXTRAP           } from '../../modules/nf-core/preseq/lcextrap/main'
 include { MULTIQC                   } from '../../modules/nf-core/multiqc/main'
 include { CAT_FASTQ                 } from '../../modules/nf-core/cat/fastq/main'
-include { RASTAIR_CALL              } from '../../modules/nf-core/rastair/call/main'
-include { RASTAIR_MBIAS             } from '../../modules/nf-core/rastair/mbias/main'
 include { FASTQ_ALIGN_DEDUP_BISMARK } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
 include { FASTQ_ALIGN_DEDUP_BWAMETH } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
 include { FASTQ_ALIGN_DEDUP_BWAMEM  } from '../../subworkflows/nf-core/fastq_align_dedup_bwamem/main'
@@ -20,7 +18,8 @@ include { paramsSummaryMultiqc      } from '../../subworkflows/nf-core/utils_nfc
 include { softwareVersionsToYAML    } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText    } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet  } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { TARGETED_SEQUENCING        } from '../../subworkflows/local/targeted_sequencing'
+include { TAPS_CONVERSION           } from '../../subworkflows/local/taps_conversion'
+include { TARGETED_SEQUENCING       } from '../../subworkflows/local/targeted_sequencing'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,8 +48,6 @@ workflow METHYLSEQ {
     ch_bai           = Channel.empty()
     ch_bedgraph      = Channel.empty()
     ch_aligner_mqc   = Channel.empty()
-    ch_rastair_mbias = Channel.empty()
-    ch_rastair_call  = Channel.empty()
     ch_qualimap      = Channel.empty()
     ch_preseq        = Channel.empty()
     ch_multiqc_files = Channel.empty()
@@ -192,32 +189,16 @@ workflow METHYLSEQ {
     // MODULE: Count C->T conversion rates as a readout for DNA methylation
     //
     if ( params.taps ) {
-        //
-        // Run Rastair Call: EDU: We may want a subworkflow here to run Rastair 3x for call, mbias and per-read
-        //
-        ch_fasta.view { it -> "fasta channel: ${it}" }
-        ch_fasta_index.view { it -> "fasta index channel: ${it}" }
-        ch_bam.view { it -> "bam channel: ${it}" }
-        ch_bai.view { it -> "bai channel: ${it}" }
-
-        RASTAIR_MBIAS (
+        TAPS_CONVERSION (
             ch_bam,
             ch_bai,
-            ch_fasta.map{ it[1] },
-            ch_fasta_index.map{ it[1] },
+            ch_fasta,
+            ch_fasta_index,
         )
-        ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), [ txt ] ]
-        ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
+        // ch_rastair_mbias = TAPS_CONVERSION.out.mbias // channel: [ val(meta), [ txt ] ]
+        // ch_rastair_call  = TAPS_CONVERSION.out.call // channel: [ val(meta), [ txt ] ]
+        ch_versions      = ch_versions.mix(TAPS_CONVERSION.out.versions)
 
-
-        RASTAIR_CALL (
-            ch_bam,
-            ch_bai,
-            ch_fasta.map{ it[1] },
-            ch_fasta_index.map{ it[1] },
-        )
-        ch_rastair_call = RASTAIR_CALL.out.txt // channel: [ val(meta), [ txt ] ]
-        ch_versions     = ch_versions.mix(RASTAIR_CALL.out.versions.first())
     }
 
     //
