@@ -25,8 +25,9 @@ process RASTAIR_CALL {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def nOT_clip = meta.rastair_nOT_clip ?: '0,0,10,0' // [r1_start, r1_end, r2_start, r2_end]
-    def nOB_clip = meta.rastair_nOB_clip ?: '0,0,10,0' // [r1_start, r1_end, r2_start, r2_end]
+    // Pending the resolution of the mbias_parse process
+    def nOT_clip = '0,0,10,0' // [r1_start, r1_end, r2_start, r2_end]
+    def nOB_clip ='0,0,10,0' // [r1_start, r1_end, r2_start, r2_end]
 
     """
     rastair call \\

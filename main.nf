@@ -14,13 +14,12 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTA_INDEX_BISMARK_BWAMETH           } from './subworkflows/nf-core/fasta_index_bismark_bwameth/main'
-include { BWA_INDEX                             } from './modules/nf-core/bwa/index/main'
-// include { FASTA_INDEX_BISMARK_BWAMETH_BWAMEM } from './subworkflows/local/fasta_index_bismark_bwameth_bwamem/main'
-include { PIPELINE_INITIALISATION               } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { PIPELINE_COMPLETION                   } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { getGenomeAttribute                    } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { METHYLSEQ                             } from './workflows/methylseq/'
+include { FASTA_INDEX_BISMARK_BWAMETH   } from './subworkflows/nf-core/fasta_index_bismark_bwameth/main'
+include { BWA_INDEX                     } from './modules/nf-core/bwa/index/main'
+include { PIPELINE_INITIALISATION       } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { PIPELINE_COMPLETION           } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { getGenomeAttribute            } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { METHYLSEQ                     } from './workflows/methylseq/'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -73,7 +72,7 @@ workflow NFCORE_METHYLSEQ {
     )
     ch_versions = ch_versions.mix(FASTA_INDEX_BISMARK_BWAMETH.out.versions)
 
-    // Here we can check if ch_or_val_bwamem_index is empty or not
+    // Here we could check if ch_or_val_bwamem_index is empty or not
     // if it is empty, we can run the BWA_INDEX subworkflow
     // if it is not empty, we need to validate the index
     BWA_INDEX (
