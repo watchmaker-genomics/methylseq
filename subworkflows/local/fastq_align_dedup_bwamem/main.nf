@@ -1,4 +1,4 @@
-include { FASTQ_ALIGN_BWA                               } from '../fastq_align_bwa/main'
+include { FASTQ_ALIGN_BWA                               } from '../../nf-core/fastq_align_bwa/main'
 include { GATK4_REMOVEDUPLICATES                        } from '../../../modules/nf-core/gatk4/markduplicates/main'
 include { SAMTOOLS_SORT                                 } from '../../../modules/nf-core/samtools/sort/main'
 include { SAMTOOLS_INDEX as SAMTOOLS_INDEX_ALIGNMENTS   } from '../../../modules/nf-core/samtools/index/main'
