@@ -188,7 +188,7 @@ workflow METHYLSEQ {
     //
     // MODULE: Count C->T conversion rates as a readout for DNA methylation
     //
-    if ( params.taps ) {
+    if ( params.taps == true ) {
         TAPS_CONVERSION (
             ch_bam,
             ch_bai,
@@ -198,7 +198,6 @@ workflow METHYLSEQ {
         // ch_rastair_mbias = TAPS_CONVERSION.out.mbias // channel: [ val(meta), [ txt ] ]
         // ch_rastair_call  = TAPS_CONVERSION.out.call // channel: [ val(meta), [ txt ] ]
         ch_versions      = ch_versions.mix(TAPS_CONVERSION.out.versions)
-
     }
 
     //

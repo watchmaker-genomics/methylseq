@@ -15,7 +15,6 @@ workflow TAPS_CONVERSION {
     ch_fasta               // channel: [ [:], /path/to/genome.fa]
     ch_fasta_index         // channel: [ val(meta), /path/to/genome.fa.fai]
 
-
     main:
 
     ch_rastair_mbias = Channel.empty()
@@ -31,8 +30,6 @@ workflow TAPS_CONVERSION {
     ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), [ txt ] ]
     ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
 
-
-
     RASTAIR_CALL (
         ch_bam,
         ch_bai,
@@ -43,7 +40,7 @@ workflow TAPS_CONVERSION {
     ch_versions     = ch_versions.mix(RASTAIR_CALL.out.versions.first())
 
     emit:
-    mbias = RASTAIR_MBIAS.out.txt   // channel: [ val(meta), path("*.bedGraph") ]
-    call  = RASTAIR_CALL.out.txt    // channel: [ val(meta), path("*_metrics") ]
-    versions          = ch_versions // channel: path("*.version.txt")
+    mbias       = RASTAIR_MBIAS.out.txt   // channel: [ val(meta), path("*.txt") ]
+    call        = RASTAIR_CALL.out.txt    // channel: [ val(meta), path("*.txt") ]
+    versions    = ch_versions // channel: path("*.version.txt")
 }
