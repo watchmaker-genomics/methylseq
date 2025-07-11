@@ -105,9 +105,10 @@ workflow METHYLSEQ {
     // SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
     //
 
-    if ( params.taps == true & params.aligner != 'bwameth') {
-        log.info "TAPS protocol detected and aligner is not 'bwameth'. Setting aligner to 'bwamem'."
-        params.aligner = 'bwamem'
+    if ( params.taps == true & params.aligner != 'bwamem') {
+        log.info "TAPS protocol detected and aligner is not 'bwamem'. Setting aligner to 'bwamem'.
+        We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data."
+        // params.aligner = 'bwamem'
     } 
 
     // Aligner: bismark or bismark_hisat
