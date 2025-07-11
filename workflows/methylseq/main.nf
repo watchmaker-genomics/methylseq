@@ -106,8 +106,7 @@ workflow METHYLSEQ {
     //
 
     if ( params.taps == true & params.aligner != 'bwamem') {
-        log.info "TAPS protocol detected and aligner is not 'bwamem'. Setting aligner to 'bwamem'.
-        We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data."
+        log.info "TAPS protocol detected and aligner is not 'bwamem'. Setting aligner to 'bwamem'. We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data."
         // params.aligner = 'bwamem'
     } 
 
