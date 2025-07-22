@@ -23,6 +23,9 @@ workflow TAPS_CONVERSION {
     ch_versions      = Channel.empty()
 
     log.info "Running TAPS conversion module with Rastair to assess C->T conversion as a readout for methylation."
+    ch_bam.view { meta ->
+        log.info "Processing BAM file for meta: ${meta.id}"
+    }
 
     RASTAIR_MBIAS (
         ch_bam,
@@ -30,24 +33,24 @@ workflow TAPS_CONVERSION {
         ch_fasta.map{ it[1] },
         ch_fasta_index.map{ it[1] },
     )
-    ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), [ txt ] ]
-    ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
+    ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), txt ]
+    ch_versions      = ch_versions.mix(RASTAIR_MBIAS_PARSER.out.versions.first())
 
     RASTAIR_MBIAS_PARSER (
         ch_rastair_mbias
     )
-    ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), [ txt ] ]
-    ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
+    ch_rastair_mbias_parser = RASTAIR_MBIAS_PARSER.out.mbias_processed_str // channel: [ val(meta), nOT_clip, nOB_clip ]
+    ch_versions             = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
 
     RASTAIR_CALL (
         ch_bam,
         ch_bai,
         ch_fasta.map{ it[1] },
         ch_fasta_index.map{ it[1] },
-        ch_rastair_mbias.map{ it[0].trim_OT },
-        ch_rastair_mbias.map{ it[0].trim_OB },
+        ch_rastair_mbias_parser.map{ it[1] },
+        ch_rastair_mbias_parser.map{ it[2] },
     )
-    ch_rastair_call = RASTAIR_CALL.out.txt // channel: [ val(meta), [ txt ] ]
+    ch_rastair_call = RASTAIR_CALL.out.txt // channel: [ val(meta), txt ]
     ch_versions     = ch_versions.mix(RASTAIR_CALL.out.versions.first())
 
     emit:
