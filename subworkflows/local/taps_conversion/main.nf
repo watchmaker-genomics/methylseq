@@ -34,13 +34,13 @@ workflow TAPS_CONVERSION {
         ch_fasta_index.map{ it[1] },
     )
     ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), txt ]
-    ch_versions      = ch_versions.mix(RASTAIR_MBIAS_PARSER.out.versions.first())
+    ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
 
     RASTAIR_MBIAS_PARSER (
         ch_rastair_mbias
     )
     ch_rastair_mbias_parser = RASTAIR_MBIAS_PARSER.out.mbias_processed_str // channel: [ val(meta), nOT_clip, nOB_clip ]
-    ch_versions             = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
+    ch_versions             = ch_versions.mix(RASTAIR_MBIAS_PARSER.out.versions.first())
 
     RASTAIR_CALL (
         ch_bam,
