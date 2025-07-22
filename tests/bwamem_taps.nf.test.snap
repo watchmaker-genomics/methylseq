@@ -1,0 +1,22 @@
+{
+    "Params: bwamem | taps": {
+        "content": [
+            0,
+            null,
+            [
+                "pipeline_info"
+            ],
+            [
+                
+            ],
+            [
+                
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.0",
+            "nextflow": "24.10.5"
+        },
+        "timestamp": "2025-07-22T11:22:04.650074"
+    }
+}
