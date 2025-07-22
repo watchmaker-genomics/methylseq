@@ -44,6 +44,8 @@ workflow TAPS_CONVERSION {
         ch_bai,
         ch_fasta.map{ it[1] },
         ch_fasta_index.map{ it[1] },
+        ch_rastair_mbias.map{ it[0].trim_OT },
+        ch_rastair_mbias.map{ it[0].trim_OB },
     )
     ch_rastair_call = RASTAIR_CALL.out.txt // channel: [ val(meta), [ txt ] ]
     ch_versions     = ch_versions.mix(RASTAIR_CALL.out.versions.first())
