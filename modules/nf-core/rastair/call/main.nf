@@ -14,6 +14,8 @@ process RASTAIR_CALL {
     tuple val(meta2), path(bai)
     path(fasta)
     path(fai)
+    val(parsed_trim_OT)
+    val(parsed_trim_OB)
 
     output:
     tuple val(meta), path("*.rastair_call.txt"),    emit: txt
@@ -26,11 +28,14 @@ process RASTAIR_CALL {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
+    def nt_OT_to_trim = meta.trim_OT ?: parsed_trim_OT
+    def nt_OB_to_trim = meta.trim_OB ?: parsed_trim_OB
+
     """
     rastair call \\
         --threads ${task.cpus} \\
-        --nOT ${nOT_clip} \\
-        --nOB ${nOB_clip} \\
+        --nOT ${nt_OT_to_trim} \\
+        --nOB ${nt_OB_to_trim} \\
         --fasta-file ${fasta} \\
         ${bam} | tee ${prefix}.rastair_call.txt | /app/scripts/rastair_call_to_methylkit.sh | gzip -c > ${prefix}.rastair_methylkit.txt.gz
 

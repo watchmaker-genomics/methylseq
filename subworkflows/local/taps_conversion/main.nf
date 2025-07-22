@@ -4,8 +4,9 @@
  * Uses Rastair to assess C->T conversion as a readout for methylation in a genome-wide basis
  */
 
-include { RASTAIR_CALL              } from '../../../modules/nf-core/rastair/call/main'
 include { RASTAIR_MBIAS             } from '../../../modules/nf-core/rastair/mbias/main'
+include { RASTAIR_MBIAS_PARSER      } from '../../../modules/nf-core/rastair/mbias_parser/main'
+include { RASTAIR_CALL              } from '../../../modules/nf-core/rastair/call/main'
 
 workflow TAPS_CONVERSION {
 
@@ -28,6 +29,12 @@ workflow TAPS_CONVERSION {
         ch_bai,
         ch_fasta.map{ it[1] },
         ch_fasta_index.map{ it[1] },
+    )
+    ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), [ txt ] ]
+    ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
+
+    RASTAIR_MBIAS_PARSER (
+        ch_rastair_mbias
     )
     ch_rastair_mbias = RASTAIR_MBIAS.out.txt // channel: [ val(meta), [ txt ] ]
     ch_versions      = ch_versions.mix(RASTAIR_MBIAS.out.versions.first())
