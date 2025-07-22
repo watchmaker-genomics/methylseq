@@ -63,13 +63,6 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
     /*
      * Collect MultiQC inputs
      */
-    ch_picard_metrics.view()
-    ch_flagstat.view()
-    ch_stats.view()
-    ch_idxstats.view()
-    ch_alignment.view()
-    ch_alignment_index.view()
-
     ch_multiqc_files = ch_picard_metrics.collect{ meta, metrics -> metrics }
                         .mix(ch_flagstat.collect{ meta, flagstat -> flagstat })
                         .mix(ch_stats.collect{ meta, stats -> stats  })

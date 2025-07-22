@@ -21,6 +21,8 @@ workflow TAPS_CONVERSION {
     ch_rastair_call  = Channel.empty()
     ch_versions      = Channel.empty()
 
+    log.info "Running TAPS conversion module with Rastair to assess C->T conversion as a readout for methylation."
+
     RASTAIR_MBIAS (
         ch_bam,
         ch_bai,
@@ -40,7 +42,7 @@ workflow TAPS_CONVERSION {
     ch_versions     = ch_versions.mix(RASTAIR_CALL.out.versions.first())
 
     emit:
-    mbias       = RASTAIR_MBIAS.out.txt   // channel: [ val(meta), path("*.txt") ]
-    call        = RASTAIR_CALL.out.txt    // channel: [ val(meta), path("*.txt") ]
+    mbias       = ch_rastair_mbias   // channel: [ val(meta), path("*.txt") ]
+    call        = ch_rastair_call    // channel: [ val(meta), path("*.txt") ]
     versions    = ch_versions // channel: path("*.version.txt")
 }

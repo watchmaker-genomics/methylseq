@@ -7,7 +7,7 @@ in a genome-wide basis
 
 process RASTAIR_CALL {
     label 'process_medium'
-    container "docker.io/sbludwig/rastair:version-0.8.1"
+    container "docker.io/sbludwig/rastair:version-0.8.2"
 
     input:
     tuple val(meta), path(bam)
@@ -17,6 +17,7 @@ process RASTAIR_CALL {
 
     output:
     tuple val(meta), path("*.rastair_call.txt"),    emit: txt
+    tuple val(meta), path("*_methylkit.txt.gz"),    emit: gz
     path "versions.yml",                            emit: versions
 
     when:
@@ -25,17 +26,13 @@ process RASTAIR_CALL {
     script:
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    // Pending the resolution of the mbias_parse process
-    def nOT_clip = '0,0,10,0' // [r1_start, r1_end, r2_start, r2_end]
-    def nOB_clip ='0,0,10,0' // [r1_start, r1_end, r2_start, r2_end]
-
     """
     rastair call \\
         --threads ${task.cpus} \\
         --nOT ${nOT_clip} \\
         --nOB ${nOB_clip} \\
         --fasta-file ${fasta} \\
-        ${bam} > ${prefix}.rastair_call.txt
+        ${bam} | tee ${prefix}.rastair_call.txt | /app/scripts/rastair_call_to_methylkit.sh | gzip -c > ${prefix}.rastair_methylkit.txt.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

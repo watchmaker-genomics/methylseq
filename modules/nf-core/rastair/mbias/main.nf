@@ -7,7 +7,7 @@ in a per read position basis
 
 process RASTAIR_MBIAS {
     label 'process_medium'
-    container "docker.io/sbludwig/rastair:version-0.8.1"
+    container "docker.io/sbludwig/rastair:version-0.8.2"
 
     input:
     tuple val(meta), path(bam)
