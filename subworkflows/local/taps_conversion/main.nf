@@ -23,9 +23,7 @@ workflow TAPS_CONVERSION {
     ch_versions      = Channel.empty()
 
     log.info "Running TAPS conversion module with Rastair to assess C->T conversion as a readout for methylation."
-    ch_bam.view { meta ->
-        log.info "Processing BAM file for meta: ${meta.id}"
-    }
+    ch_bam.view()
 
     RASTAIR_MBIAS (
         ch_bam,
