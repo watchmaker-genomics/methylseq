@@ -13,6 +13,7 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
     ch_fasta             // channel: [ val(meta), [ fasta ] ]
     ch_bwamem_index      // channel: [ val(meta), [ bwam index ] ]
     skip_deduplication   // boolean: whether to deduplicate alignments
+    use_gpu              // boolean: whether to use GPU or CPU for bwamem alignment
 
     main:
 
@@ -28,7 +29,8 @@ workflow FASTQ_ALIGN_DEDUP_BWAMEM {
         ch_reads,
         ch_bwamem_index,
         ch_fasta,
-        true // val_sort_bam hardcoded to true
+        true, // val_sort_bam hardcoded to true
+        false // use_gpu hardcoded to false
     )
     ch_alignment        = FASTQ_ALIGN_BWA.out.bam
     ch_alignment_index  = FASTQ_ALIGN_BWA.out.bai

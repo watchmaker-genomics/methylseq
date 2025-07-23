@@ -39,7 +39,6 @@ workflow METHYLSEQ {
     ch_bwamem_index    // channel: [ path(bwamem_index)    ]
 
     main:
-
     ch_fastq         = Channel.empty()
     ch_fastqc_html   = Channel.empty()
     ch_fastqc_zip    = Channel.empty()
@@ -105,8 +104,8 @@ workflow METHYLSEQ {
     // SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
     //
 
-    if ( params.taps == true & params.aligner != 'bwamem') {
-        log.info "TAPS protocol detected and aligner is not 'bwamem'. Setting aligner to 'bwamem'. We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data."
+    if ( params.taps & params.aligner != 'bwamem') {
+        log.info "TAPS protocol detected and aligner is not 'bwamem'. We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data."
         // params.aligner = 'bwamem'
     } 
 
@@ -166,15 +165,42 @@ workflow METHYLSEQ {
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions)
     }
 
-    // Aligner: bwa mem
+    // Aligner: bwamem
     else if ( params.aligner == 'bwamem' ){
+
+        // ch_bwamem_inputs = ch_reads
+        //     .combine(ch_fasta)
+        //     .combine(ch_fasta_index)
+        //     .combine(ch_bwamem_index)
+        //     .multiMap { meta, reads, meta_fasta, fasta, meta_fasta_index, fasta_index, meta_bwamem, bwamem_index ->
+        //         reads: [ meta, reads ]
+        //         fasta: [ meta_fasta, fasta ]
+        //         fasta_index: [ meta_fasta_index, fasta_index ]
+        //         bwamem_index: [ meta_bwamem, bwamem_index ]
+        //     }
+
+        // THis is the fucking culprit. Why??
+        // ch_bwamem_inputs.view()
+
+        // FASTQ_ALIGN_DEDUP_BWAMEM (
+        //     ch_bwamem_inputs.reads,
+        //     ch_bwamem_inputs.fasta,
+        //     ch_bwamem_inputs.bwamem_index,
+        //     true,
+        //     // workflow.profile.tokenize(',').intersect(['gpu']).size() >= 1
+        // )
+
+        // Add logic here for Parabricks GPU enabled bwamem if required
+
 
         FASTQ_ALIGN_DEDUP_BWAMEM (
             ch_reads,
             ch_fasta,
             ch_bwamem_index,
             params.skip_deduplication,
+            params.use_gpu
         )
+
         ch_bam         = FASTQ_ALIGN_DEDUP_BWAMEM.out.bam
         ch_bai         = FASTQ_ALIGN_DEDUP_BWAMEM.out.bai
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMEM.out.multiqc
@@ -188,7 +214,7 @@ workflow METHYLSEQ {
     //
     // MODULE: Count C->T conversion rates as a readout for DNA methylation
     //
-    if ( params.taps == true ) {
+    if (params.taps) {
         log.info "TAPS protocol detected. Running TAPS conversion module."
         TAPS_CONVERSION (
             ch_bam,

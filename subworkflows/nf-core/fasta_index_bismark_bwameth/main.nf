@@ -98,7 +98,7 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
     /*
     * Generate fasta index if not supplied for bwameth workflow or picard collecthsmetrics tool
     */
-    if (aligner == 'bwameth' || collecthsmetrics) {
+    if (aligner == 'bwameth' || aligner == 'bwamem' || collecthsmetrics) {
         // already exising fasta index
         if (fasta_index) {
             ch_fasta_index = fasta_index

@@ -58,7 +58,7 @@ workflow NFCORE_METHYLSEQ {
     ch_or_val_fasta_index   = params.fasta_index   ? Channel.fromPath(params.fasta_index).map{ it -> [ [id:it.baseName], it ] } : []
     ch_or_val_bismark_index = params.bismark_index ? Channel.fromPath(params.bismark_index).map{ it -> [ [id:it.baseName], it ] } : []
     ch_or_val_bwameth_index = params.bwameth_index ? Channel.fromPath(params.bwameth_index).map{ it -> [ [id:it.baseName], it ] } : []
-    // ch_or_val_bwamem_index  = params.bwamem_index  ? Channel.fromPath(params.bwamem_index).map{ it -> [ [id:it.baseName], it ] } : []
+    ch_or_val_bwamem_index  = params.bwamem_index  ? Channel.fromPath(params.bwamem_index).map{ it -> [ [id:it.baseName], it ] } : []
 
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
@@ -75,11 +75,27 @@ workflow NFCORE_METHYLSEQ {
 
     // Here we could check if ch_or_val_bwamem_index is empty or not
     // if it is empty, we can run the BWA_INDEX subworkflow
-    // if it is not empty, we need to validate the index
-    BWA_INDEX (
-        ch_fasta
-    )
-    ch_versions = ch_versions.mix(BWA_INDEX.out.versions)
+    // if it is not empty, we need to validate the index (file or link)
+
+    if (params.aligner == 'bwamem' && ch_or_val_bwamem_index) {
+        log.info "BWA index not provided. Generating BWA index from FASTA file."
+        // Generate BWA index from FASTA file
+        BWA_INDEX(
+            ch_fasta
+        )
+        ch_or_val_bwamem_index = BWA_INDEX.out.index
+        ch_versions = ch_versions.mix(BWA_INDEX.out.versions)
+    }
+    else if (params.aligner == 'bwamem' && !ch_or_val_bwamem_index) {
+        // Validate the BWA index
+        ch_or_val_bwamem_index = ch_or_val_bwamem_index.map { meta, index ->
+            if (index.toString().endsWith('.bwt')) {
+                [meta, index]
+            } else {
+                error "BWA index file ${index} is not valid. It should end with .bwt"
+            }
+        }
+    }
 
     //
     // WORKFLOW: Run pipeline
@@ -92,7 +108,7 @@ workflow NFCORE_METHYLSEQ {
         FASTA_INDEX_BISMARK_BWAMETH.out.fasta_index,
         FASTA_INDEX_BISMARK_BWAMETH.out.bismark_index,
         FASTA_INDEX_BISMARK_BWAMETH.out.bwameth_index,
-        BWA_INDEX.out.index,
+        ch_or_val_bwamem_index,
     )
     ch_versions = ch_versions.mix(METHYLSEQ.out.versions)
 
