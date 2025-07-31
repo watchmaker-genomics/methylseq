@@ -4,9 +4,10 @@
  * Uses Rastair to assess C->T conversion as a readout for methylation in a genome-wide basis
  */
 
-include { RASTAIR_MBIAS             } from '../../../modules/nf-core/rastair/mbias/main'
-include { RASTAIR_MBIAS_PARSER      } from '../../../modules/nf-core/rastair/mbias_parser/main'
-include { RASTAIR_CALL              } from '../../../modules/nf-core/rastair/call/main'
+include { RASTAIR_MBIAS             } from '../../../modules/local/rastair/mbias/main'
+include { RASTAIR_MBIAS_PARSER      } from '../../../modules/local/rastair/mbias_parser/main'
+include { RASTAIR_CALL              } from '../../../modules/local/rastair/call/main'
+include { CONVERT_TO_METHYLKIT      } from '../../../modules/local/rastair/methylkit/main'
 
 workflow TAPS_CONVERSION {
 
@@ -49,8 +50,15 @@ workflow TAPS_CONVERSION {
     ch_rastair_call = RASTAIR_CALL.out.txt // channel: [ val(meta), txt ]
     ch_versions     = ch_versions.mix(RASTAIR_CALL.out.versions.first())
 
+    CONVERT_TO_METHYLKIT (
+        ch_rastair_call
+    )
+    ch_methylkit = CONVERT_TO_METHYLKIT.out.methylkit // channel
+    ch_versions  = ch_versions.mix(CONVERT_TO_METHYLKIT.out.versions.first())
+
     emit:
     mbias        = ch_rastair_mbias         // channel: [ val(meta), path("*.txt") ]
     call         = ch_rastair_call          // channel: [ val(meta), path("*.txt") ]
+    methylkit    = ch_methylkit             // channel: [ val(meta), path("*.txt.gz") ]
     versions     = ch_versions              // channel: path("*.version.txt")
 }
