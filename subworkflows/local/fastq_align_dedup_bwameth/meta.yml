@@ -42,9 +42,9 @@ input:
         Structure: [ val(meta), path(fasta index) ]
   - ch_bwameth_index:
       description: |
-        Bismark genome index files
+        Bwa meth genome index files
         Structure: [ val(meta), path(index) ]
-      pattern: "BismarkIndex"
+      pattern: "BwaMethIndex"
   - skip_deduplication:
       type: boolean
       description: |

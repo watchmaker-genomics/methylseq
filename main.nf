@@ -15,12 +15,12 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTA_INDEX_BISMARK_BWAMETH   } from './subworkflows/nf-core/fasta_index_bismark_bwameth/main'
-include { BWA_INDEX                     } from './modules/nf-core/bwa/index/main'
-include { PIPELINE_INITIALISATION       } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { PIPELINE_COMPLETION           } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { getGenomeAttribute            } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
-include { METHYLSEQ                     } from './workflows/methylseq/'
+include { FASTA_INDEX_BISMARK_BWAMETH_BWAMEM    } from './subworkflows/nf-core/fasta_index_bismark_bwameth_bwamem/main'
+include { BWA_INDEX                             } from './modules/nf-core/bwa/index/main'
+include { PIPELINE_INITIALISATION               } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { PIPELINE_COMPLETION                   } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { getGenomeAttribute                    } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
+include { METHYLSEQ                             } from './workflows/methylseq/'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -63,39 +63,16 @@ workflow NFCORE_METHYLSEQ {
     //
     // SUBWORKFLOW: Prepare any required reference genome indices
     //
-    FASTA_INDEX_BISMARK_BWAMETH(
+    FASTA_INDEX_BISMARK_BWAMETH_BWAMEM(
         ch_fasta,
         ch_or_val_fasta_index,
         ch_or_val_bismark_index,
         ch_or_val_bwameth_index,
+        ch_or_val_bwamem_index,
         params.aligner,
         params.collecthsmetrics
     )
-    ch_versions = ch_versions.mix(FASTA_INDEX_BISMARK_BWAMETH.out.versions)
-
-    // Here we could check if ch_or_val_bwamem_index is empty or not
-    // if it is empty, we can run the BWA_INDEX subworkflow
-    // if it is not empty, we need to validate the index (file or link)
-
-    if (params.aligner == 'bwamem' && ch_or_val_bwamem_index) {
-        log.info "BWA index not provided. Generating BWA index from FASTA file."
-        // Generate BWA index from FASTA file
-        BWA_INDEX(
-            ch_fasta
-        )
-        ch_or_val_bwamem_index = BWA_INDEX.out.index
-        ch_versions = ch_versions.mix(BWA_INDEX.out.versions)
-    }
-    else if (params.aligner == 'bwamem' && !ch_or_val_bwamem_index) {
-        // Validate the BWA index
-        ch_or_val_bwamem_index = ch_or_val_bwamem_index.map { meta, index ->
-            if (index.toString().endsWith('.bwt')) {
-                [meta, index]
-            } else {
-                error "BWA index file ${index} is not valid. It should end with .bwt"
-            }
-        }
-    }
+    ch_versions = ch_versions.mix(FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.versions)
 
     //
     // WORKFLOW: Run pipeline
@@ -104,11 +81,11 @@ workflow NFCORE_METHYLSEQ {
     METHYLSEQ (
         samplesheet,
         ch_versions,
-        FASTA_INDEX_BISMARK_BWAMETH.out.fasta,
-        FASTA_INDEX_BISMARK_BWAMETH.out.fasta_index,
-        FASTA_INDEX_BISMARK_BWAMETH.out.bismark_index,
-        FASTA_INDEX_BISMARK_BWAMETH.out.bwameth_index,
-        ch_or_val_bwamem_index,
+        FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.fasta,
+        FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.fasta_index,
+        FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.bismark_index,
+        FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.bwameth_index,
+        FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.bwamem_index,
     )
     ch_versions = ch_versions.mix(METHYLSEQ.out.versions)
 
