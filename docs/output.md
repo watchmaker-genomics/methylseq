@@ -113,7 +113,7 @@ bwamem/
 #### rastair
 
 ```
-Rastair
+rastair
 ├── call
 |   └── Ecoli_10K_methylated.markdup.sorted_CpG.rastair_call.tsv
 ├── mbias

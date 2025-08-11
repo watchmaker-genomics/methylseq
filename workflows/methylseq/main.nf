@@ -19,6 +19,7 @@ include { softwareVersionsToYAML    } from '../../subworkflows/nf-core/utils_nfc
 include { methodsDescriptionText    } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { validateInputSamplesheet  } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { TAPS_CONVERSION           } from '../../subworkflows/local/taps_conversion'
+include { METHYLDACKEL              } from '../../subworkflows/local/methyldackel/main'
 include { TARGETED_SEQUENCING       } from '../../subworkflows/local/targeted_sequencing'
 
 /*
@@ -198,7 +199,7 @@ workflow METHYLSEQ {
     }
 
     //
-    // MODULE: Count C->T conversion rates as a readout for DNA methylation
+    // Subworkflow: Count positive mC->T conversion rates as a readout for DNA methylation
     //
     if (params.taps) {
         log.info "TAPS protocol detected. Running TAPS conversion module."
@@ -211,6 +212,22 @@ workflow METHYLSEQ {
         ch_rastair_mbias = TAPS_CONVERSION.out.mbias // channel: [ val(meta), [ txt ] ]
         ch_rastair_call  = TAPS_CONVERSION.out.call // channel: [ val(meta), [ txt ] ]
         ch_versions      = ch_versions.mix(TAPS_CONVERSION.out.versions)
+    } 
+
+    //
+    // Subworkflow: Count negative C->T conversion rates as a readout for DNA methylation
+    //
+    else if ( !params.taps ){ // Not TAPS, hence negative mC readout
+        METHYLDACKEL (
+            ch_bam,
+            ch_bai,
+            ch_fasta,
+            ch_fasta_index
+        )
+        ch_bedgraph    = METHYLDACKEL.out.methydackel_extract_bedgraph  // channel: [ val(meta), [ bedgraph ]  ]
+        ch_methylkit   = METHYLDACKEL.out.methydackel_extract_methylkit // channel: [ val(meta), [ methylkit ] ]
+        ch_mbias       = METHYLDACKEL.out.methydackel_mbias // channel: [ val(meta), [ mbias ] ]
+        ch_versions    = ch_versions.mix(METHYLDACKEL.out.versions)
     }
 
     //
