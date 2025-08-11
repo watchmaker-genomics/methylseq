@@ -14,7 +14,7 @@ workflow TAPS_CONVERSION {
     take:
     ch_bam                 // channel: [ val(meta), [ bam ] ] ## BAM from alignment
     ch_bai                 // channel: [ val(meta), [ bai ] ] ## BAI from alignment
-    ch_fasta               // channel: [ [:], /path/to/genome.fa]
+    ch_fasta               // channel: [ val(meta), [ fasta ] ]
     ch_fasta_index         // channel: [ val(meta), /path/to/genome.fa.fai]
 
     main:

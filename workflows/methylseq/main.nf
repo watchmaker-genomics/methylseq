@@ -161,7 +161,6 @@ workflow METHYLSEQ {
         )
         ch_bam         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bam
         ch_bai         = FASTQ_ALIGN_DEDUP_BWAMETH.out.bai
-        ch_bedgraph    = FASTQ_ALIGN_DEDUP_BWAMETH.out.methydackel_extract_bedgraph
         ch_aligner_mqc = FASTQ_ALIGN_DEDUP_BWAMETH.out.multiqc
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BWAMETH.out.versions)
     }
