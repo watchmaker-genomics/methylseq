@@ -78,24 +78,6 @@ output:
         File containing samtools stats output
         Structure: [ val(meta), path(stats) ]
       pattern: "*.{stats}"
-  - methydackel_extract_bedgraph:
-      type: file
-      description: |
-        bedGraph file, containing per-base methylation metrics
-        Structure: [ val(meta), path(bedgraph) ]
-      pattern: "*.bedGraph"
-  - methydackel_extract_methylkit:
-      type: file
-      description: |
-        methylKit file, containing per-base methylation metrics
-        Structure: [ val(meta), path(methylKit) ]
-      pattern: "*.methylKit"
-  - methydackel_mbias:
-      type: file
-      description: |
-        Text file containing methylation bias
-        Structure: [ val(meta), path(mbias) ]
-      pattern: "*.{txt}"
   - picard_metrics:
       type: file
       description: |
