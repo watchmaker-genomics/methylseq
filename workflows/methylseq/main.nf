@@ -105,13 +105,13 @@ workflow METHYLSEQ {
     // SUBWORKFLOW: Align reads, deduplicate and extract methylation with Bismark
     //
 
-    if ( params.taps & params.aligner != 'bwamem') {
+    if (params.taps & params.aligner != 'bwamem') {
         log.info "TAPS protocol detected and aligner is not 'bwamem'. We recommend using bwa-mem for TAPS protocol as it is optimized for this type of data."
         // params.aligner = 'bwamem'
     } 
 
     // Aligner: bismark or bismark_hisat
-    if ( params.aligner =~ /bismark/ ) {
+    if (params.aligner =~ /bismark/ ) {
         //
         // Run Bismark alignment + downstream processing
         //
@@ -138,7 +138,7 @@ workflow METHYLSEQ {
         ch_versions    = ch_versions.mix(FASTQ_ALIGN_DEDUP_BISMARK.out.versions)
     }
     // Aligner: bwameth
-    else if ( params.aligner == 'bwameth' ){
+    else if (params.aligner == 'bwameth'){
 
         ch_bwameth_inputs = ch_reads
             .combine(ch_fasta)
@@ -166,7 +166,7 @@ workflow METHYLSEQ {
     }
 
     // Aligner: bwamem
-    else if ( params.aligner == 'bwamem' ){
+    else if (params.aligner == 'bwamem'){
 
         ch_bwamem_inputs = ch_reads
             .combine(ch_fasta)
@@ -200,7 +200,7 @@ workflow METHYLSEQ {
     //
     // Subworkflow: Count positive mC->T conversion rates as a readout for DNA methylation
     //
-    if (params.taps) {
+    if (params.taps || params.aligner == 'bwamem') {
         log.info "TAPS protocol detected. Running TAPS conversion module."
         TAPS_CONVERSION (
             ch_bam,
@@ -216,7 +216,7 @@ workflow METHYLSEQ {
     //
     // Subworkflow: Count negative C->T conversion rates as a readout for DNA methylation
     //
-    else if ( !params.taps ){ // Not TAPS, hence negative mC readout
+    else if (!params.taps || params.aligner == 'bwameth'){ // Not TAPS, hence negative mC readout
         METHYLDACKEL (
             ch_bam,
             ch_bai,
