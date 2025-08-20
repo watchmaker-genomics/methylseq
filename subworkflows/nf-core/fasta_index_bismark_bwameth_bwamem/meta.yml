@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/subworkflows/yaml-schema.json
-name: "fasta_index_bismark_bwameth"
-description: Generate index files from reference fasta for bismark and bwameth
+name: "fasta_index_bismark_bwameth_bwamem"
+description: Generate index files from reference fasta for bismark, bwameth and bwamem aligners
 keywords:
   - bismark
   - bwameth

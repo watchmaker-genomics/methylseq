@@ -1,13 +1,13 @@
 nextflow_workflow {
 
-    name "Test Subworkflow FASTA_INDEX_BISMARK_BWAMETH"
+    name "Test Subworkflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM"
     script "../main.nf"
-    workflow "FASTA_INDEX_BISMARK_BWAMETH"
+    workflow "FASTA_INDEX_BISMARK_BWAMETH_BWAMEM"
     config "./nextflow.config"
 
     tag "subworkflows"
     tag "subworkflows_nfcore"
-    tag "subworkflows/fasta_index_bismark_bwameth"
+    tag "subworkflows/fasta_index_bismark_bwameth_bwamem"
     tag "untar"
     tag "gunzip"
     tag "bismark/genomepreparation"

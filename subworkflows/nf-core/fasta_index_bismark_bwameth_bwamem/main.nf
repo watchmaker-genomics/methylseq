@@ -2,15 +2,17 @@ include { UNTAR                     } from '../../../modules/nf-core/untar/main'
 include { GUNZIP                    } from '../../../modules/nf-core/gunzip/main'
 include { BISMARK_GENOMEPREPARATION } from '../../../modules/nf-core/bismark/genomepreparation/main'
 include { BWAMETH_INDEX             } from '../../../modules/nf-core/bwameth/index/main'
+include { BWA_INDEX                 } from '../../../modules/nf-core/bwa/index/main'
 include { SAMTOOLS_FAIDX            } from '../../../modules/nf-core/samtools/faidx/main'
 
-workflow FASTA_INDEX_BISMARK_BWAMETH {
+workflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM {
 
     take:
     fasta            // channel: [ val(meta), [ fasta ] ]
     fasta_index      // channel: [ val(meta), [ fasta index ] ]
     bismark_index    // channel: [ val(meta), [ bismark index ] ]
     bwameth_index    // channel: [ val(meta), [ bwameth index ] ]
+    bwamem_index     // channel: [ val(meta), [ bwamem index ] ]
     aligner          // string: bismark, bismark_hisat or bwameth
     collecthsmetrics // boolean: whether to run picard collecthsmetrics
 
@@ -20,6 +22,7 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
     ch_fasta_index   = Channel.empty()
     ch_bismark_index = Channel.empty()
     ch_bwameth_index = Channel.empty()
+    ch_bwamem_index  = Channel.empty()
     ch_versions      = Channel.empty()
 
     // Check if fasta file is gzipped and decompress if needed
@@ -95,10 +98,37 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
         }
     }
 
+    // TODO: Here we could check if ch_or_val_bwamem_index is empty or not
+    // if it is empty, we can run the BWA_INDEX subworkflow
+    // if it is not empty, we need to validate the index (file or link)
+
+    else if (params.aligner == 'bwamem'){
+        log.info "BWA index not provided. Generating BWA index from FASTA file."
+        /*
+         * Generate BWA index from FASTA file
+         */
+        if (bwamem_index) {
+            // TODO: Validate the BWA index
+            ch_bwamem_index = bwamem_index //.map { meta, index ->
+            //     if (index.toString().endsWith('.bwt')) {
+            //         [meta, index]
+            //     } else {
+            //         error "BWA index file ${index} is not valid. It should end with .bwt"
+            //     }
+            // }
+        } else {
+            BWA_INDEX(
+                ch_fasta
+            )
+            ch_bwamem_index = BWA_INDEX.out.index
+            ch_versions = ch_versions.mix(BWA_INDEX.out.versions)
+        }
+    }
+
     /*
     * Generate fasta index if not supplied for bwameth workflow or picard collecthsmetrics tool
     */
-    if (aligner == 'bwameth' || collecthsmetrics) {
+    if (aligner == 'bwameth' || aligner == 'bwamem' || collecthsmetrics) {
         // already exising fasta index
         if (fasta_index) {
             ch_fasta_index = fasta_index
@@ -118,5 +148,6 @@ workflow FASTA_INDEX_BISMARK_BWAMETH {
     fasta_index   = ch_fasta_index   // channel: [ val(meta), [ fasta index ] ]
     bismark_index = ch_bismark_index // channel: [ val(meta), [ bismark index ] ]
     bwameth_index = ch_bwameth_index // channel: [ val(meta), [ bwameth index ] ]
+    bwamem_index  = ch_bwamem_index // channel: [ val(meta), [ bwamem index ] ]
     versions      = ch_versions      // channel: [ versions.yml ]
 }

@@ -32,10 +32,11 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 ## Pipeline Summary
 
-The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark) or [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel).
+The pipeline allows you to choose between running either [Bismark](https://github.com/FelixKrueger/Bismark), [bwa-meth](https://github.com/brentp/bwa-meth) / [MethylDackel](https://github.com/dpryan79/methyldackel) or [BWA-Mem](https://github.com/lh3/bwa) plus [Rastair](https://bitbucket.org/bsblabludwig/rastair/src/master/) for for TAPS data processing.
 
-Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat` or `--aligner bwameth`. For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html), which implements the baseline tool `bwa-meth` in a performant method using fq2bam (BWA-MEM + GATK) as a backend for processing on GPU. To use this option, include the `gpu` profile along with `--aligner bwameth`.
+Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for alignment), `--aligner bismark_hisat`, `--aligner bwameth` or `--aligner bwamem`. For higher performance, the pipeline can leverage the [Parabricks implementation of bwa-meth (fq2bammeth)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam_meth.html) and the [Parabricks implementation of bwa-mem (fq2bammemh)](https://docs.nvidia.com/clara/parabricks/latest/documentation/tooldocs/man_fq2bam.html), which implement the baseline tools `bwa-meth` and `bwa-mem`. To use this option, include the `gpu` profile along with `--aligner bwameth` or `--aligner bwamem`.
 
+# TODO
 | Step                                         | Bismark workflow         | bwa-meth workflow     |
 | -------------------------------------------- | ------------------------ | --------------------- |
 | Generate Reference Genome Index _(optional)_ | Bismark                  | bwa-meth              |
@@ -44,6 +45,9 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Adapter sequence trimming                    | Trim Galore!             | Trim Galore!          |
 | Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth              |
 | Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates |
+
+
+
 | Extract methylation calls                    | Bismark                  | MethylDackel          |
 | Sample report                                | Bismark                  | -                     |
 | Summary Report                               | Bismark                  | -                     |
