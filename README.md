@@ -45,6 +45,9 @@ Choose between workflows by using `--aligner bismark` (default, uses bowtie2 for
 | Adapter sequence trimming                    | Trim Galore!             | Trim Galore!          |
 | Align Reads                                  | Bismark (bowtie2/hisat2) | bwa-meth              |
 | Deduplicate Alignments                       | Bismark                  | Picard MarkDuplicates |
+
+
+
 | Extract methylation calls                    | Bismark                  | MethylDackel          |
 | Sample report                                | Bismark                  | -                     |
 | Summary Report                               | Bismark                  | -                     |

@@ -150,7 +150,7 @@
             "properties": {
                 "aligner": {
                     "type": "string",
-                    "default": "bismark",
+                    "default": "= 'bismark_hisat' && params.known_splices ? \" --known-splicesite-infile <(hisat2_extract_splice_sites.py ${known_splices})\" : '',\n                params.pbat ? ' --pbat' : '',\n                ( params.single_cell || params.non_directional || params.zymo ) ? ' --non_directional' : '',\n                params.unmapped ? ' --unmapped' : '',\n                params.relax_mismatches ? \" --score_min L,0,-${params.num_mismatches}\" : '',\n                params.local_alignment ? \" --local\" : '',\n                !meta.single_end && params.minins ? \" --minins ${params.minins}\" : '',\n                meta.single_end ? '' : (\n                    params.maxins ? \" --maxins ${params.maxins}\" : (\n                        params.em_seq ? \" --maxins 1000\" : ''\n                    )\n                )\n            ].join(' ').trim() }",
                     "description": "Alignment tool to use.",
                     "fa_icon": "fas fa-dot-circle",
                     "enum": ["bismark", "bismark_hisat", "bwameth", "bwamem"],
@@ -260,7 +260,6 @@
                 "skip_trimming_presets": {
                     "type": "boolean",
                     "description": "Skip presetting trimming parameters entirely",
-                    "default": false,
                     "fa_icon": "fas fa-dot-circle"
                 }
             },
