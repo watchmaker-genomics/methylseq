@@ -199,11 +199,6 @@
                         "git_sha": "05954dab2ff481bcb999f24455da29a5828af08d",
                         "installed_by": ["bam_sort_stats_samtools"]
                     },
-                    "fasta_index_bismark_bwameth": {
-                        "branch": "master",
-                        "git_sha": "79f1c3e487520405be6dd47ed7f196efd1e3b63e",
-                        "installed_by": ["subworkflows"]
-                    },
                     "fastq_align_dedup_bismark": {
                         "branch": "master",
                         "git_sha": "8784324692c94acd129d583cb64e30a64ff197d9",
