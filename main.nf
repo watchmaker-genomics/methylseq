@@ -15,7 +15,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTA_INDEX_BISMARK_BWAMETH_BWAMEM    } from './subworkflows/nf-core/fasta_index_bismark_bwameth_bwamem/main'
+include { FASTA_INDEX_BISMARK_BWAMETH_BWAMEM    } from './subworkflows/local/fasta_index_bismark_bwameth_bwamem/main'
 include { BWA_INDEX                             } from './modules/nf-core/bwa/index/main'
 include { PIPELINE_INITIALISATION               } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { PIPELINE_COMPLETION                   } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
