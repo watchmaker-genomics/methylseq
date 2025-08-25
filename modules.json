@@ -58,12 +58,12 @@
                     "bwameth/align": {
                         "branch": "master",
                         "git_sha": "96d9a187355d26f9a5e0380f8b59c7005d073268",
-                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
+                        "installed_by": ["modules"]
                     },
                     "bwameth/index": {
                         "branch": "master",
                         "git_sha": "79f1c3e487520405be6dd47ed7f196efd1e3b63e",
-                        "installed_by": ["fasta_index_bismark_bwameth"]
+                        "installed_by": ["modules"]
                     },
                     "cat/fastq": {
                         "branch": "master",
@@ -83,17 +83,17 @@
                     "gunzip": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["fasta_index_bismark_bwameth"]
+                        "installed_by": ["modules"]
                     },
                     "methyldackel/extract": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
+                        "installed_by": ["modules"]
                     },
                     "methyldackel/mbias": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
+                        "installed_by": ["modules"]
                     },
                     "multiqc": {
                         "branch": "master",
@@ -108,7 +108,7 @@
                     "parabricks/fq2bammeth": {
                         "branch": "master",
                         "git_sha": "6969ca92f5d648c2ff806ffd3daeb8a74dae5396",
-                        "installed_by": ["fastq_align_dedup_bwameth"]
+                        "installed_by": ["modules"]
                     },
                     "picard/bedtointervallist": {
                         "branch": "master",
@@ -128,7 +128,7 @@
                     "picard/markduplicates": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
+                        "installed_by": ["modules"]
                     },
                     "preseq/lcextrap": {
                         "branch": "master",
@@ -148,12 +148,12 @@
                     "samtools/faidx": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["fasta_index_bismark_bwameth"]
+                        "installed_by": ["modules"]
                     },
                     "samtools/flagstat": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
+                        "installed_by": ["modules"]
                     },
                     "samtools/idxstats": {
                         "branch": "master",
@@ -163,17 +163,17 @@
                     "samtools/index": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["fastq_align_dedup_bismark", "fastq_align_dedup_bwameth", "modules"]
+                        "installed_by": ["modules"]
                     },
                     "samtools/sort": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["fastq_align_dedup_bismark", "fastq_align_dedup_bwameth", "modules"]
+                        "installed_by": ["modules"]
                     },
                     "samtools/stats": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["fastq_align_dedup_bwameth", "modules"]
+                        "installed_by": ["modules"]
                     },
                     "trimgalore": {
                         "branch": "master",
@@ -183,7 +183,7 @@
                     "untar": {
                         "branch": "master",
                         "git_sha": "41dfa3f7c0ffabb96a6a813fe321c6d1cc5b6e46",
-                        "installed_by": ["fasta_index_bismark_bwameth"]
+                        "installed_by": ["modules"]
                     }
                 }
             },
