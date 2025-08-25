@@ -15,6 +15,7 @@ workflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM {
     bwamem_index     // channel: [ val(meta), [ bwamem index ] ]
     aligner          // string: bismark, bismark_hisat or bwameth
     collecthsmetrics // boolean: whether to run picard collecthsmetrics
+    use_mem2         // boolean: generate mem2 index if no index provided, and bwameth is selected
 
     main:
 
@@ -90,9 +91,17 @@ workflow FASTA_INDEX_BISMARK_BWAMETH_BWAMEM {
             ch_bwameth_index = ch_bwameth_index_branched.unzipped.mix(UNTAR.out.untar)
             ch_versions      = ch_versions.mix(UNTAR.out.versions)
         } else {
-            BWAMETH_INDEX (
-                ch_fasta
-            )
+            if (use_mem2) {
+                BWAMETH_INDEX (
+                    ch_fasta,
+                    true
+                )
+            } else {
+                BWAMETH_INDEX (
+                    ch_fasta,
+                    false
+                )
+            }
             ch_bwameth_index = BWAMETH_INDEX.out.index
             ch_versions      = ch_versions.mix(BWAMETH_INDEX.out.versions)
         }

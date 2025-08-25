@@ -15,7 +15,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { FASTA_INDEX_BISMARK_BWAMETH_BWAMEM    } from './subworkflows/nf-core/fasta_index_bismark_bwameth_bwamem/main'
+include { FASTA_INDEX_BISMARK_BWAMETH_BWAMEM    } from './subworkflows/local/fasta_index_bismark_bwameth_bwamem/main'
 include { BWA_INDEX                             } from './modules/nf-core/bwa/index/main'
 include { PIPELINE_INITIALISATION               } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
 include { PIPELINE_COMPLETION                   } from './subworkflows/local/utils_nfcore_methylseq_pipeline'
@@ -70,7 +70,8 @@ workflow NFCORE_METHYLSEQ {
         ch_or_val_bwameth_index,
         ch_or_val_bwamem_index,
         params.aligner,
-        params.collecthsmetrics
+        params.collecthsmetrics,
+        params.use_mem2
     )
     ch_versions = ch_versions.mix(FASTA_INDEX_BISMARK_BWAMETH_BWAMEM.out.versions)
 

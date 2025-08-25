@@ -13,7 +13,7 @@ include { MULTIQC                   } from '../../modules/nf-core/multiqc/main'
 include { CAT_FASTQ                 } from '../../modules/nf-core/cat/fastq/main'
 include { FASTQ_ALIGN_DEDUP_BISMARK } from '../../subworkflows/nf-core/fastq_align_dedup_bismark/main'
 include { FASTQ_ALIGN_DEDUP_BWAMETH } from '../../subworkflows/nf-core/fastq_align_dedup_bwameth/main'
-include { FASTQ_ALIGN_DEDUP_BWAMEM  } from '../../subworkflows/nf-core/fastq_align_dedup_bwamem/main'
+include { FASTQ_ALIGN_DEDUP_BWAMEM  } from '../../subworkflows/local/fastq_align_dedup_bwamem/main'
 include { paramsSummaryMultiqc      } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML    } from '../../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText    } from '../../subworkflows/local/utils_nfcore_methylseq_pipeline'
@@ -81,7 +81,6 @@ workflow METHYLSEQ {
         )
         ch_fastqc_html   = FASTQC.out.html
         ch_fastqc_zip    = FASTQC.out.zip
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{ meta, zip -> zip })
         ch_versions      = ch_versions.mix(FASTQC.out.versions)
     } else {
         ch_fastqc_html   = Channel.empty()
