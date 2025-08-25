@@ -24,6 +24,11 @@ workflow TAPS_CONVERSION {
 
     log.info "Running TAPS conversion module with Rastair to assess C->T conversion as a readout for methylation."
 
+    ch_bam.view()
+    ch_bai.view()
+    ch_fasta.view()
+    ch_fasta_index.view()
+
     RASTAIR_MBIAS (
         ch_bam,
         ch_bai,
